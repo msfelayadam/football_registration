@@ -3,92 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Player Data</title>
+  <title>Admin Dashboard - EPL 3.0</title>
   <link rel="stylesheet" href="/static/style.css">
   <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; }
+    h1 { color: #004080; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    th { background-color: #e8f1ff; }
+    img { max-width: 80px; max-height: 80px; border: 1px solid #aaa; }
+    .download-links { margin-top: 20px; }
+    .download-links a {
+      margin-right: 15px;
+      background-color: #004080;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
     }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-
-    th {
-      background-color: #eee;
-    }
-
-    img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    #downloadBtn {
-      margin-top: 1rem;
+    .download-links a:hover {
+      background-color: #002f66;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Admin Dashboard</h2>
-    <button id="downloadBtn">📥 Download CSV</button>
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>House</th>
-          <th>Mobile</th>
-          <th>WhatsApp</th>
-          <th>Father</th>
-          <th>Age</th>
-          <th>Unit</th>
-          <th>EPL 2.0</th>
-          <th>Prev Team</th>
-          <th>Photo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Rows will be injected here -->
-      </tbody>
-    </table>
+  <h1>Admin Dashboard - Registered Players</h1>
+
+  <div class="download-links">
+    <a href="/download-csv" target="_blank">⬇️ Download CSV</a>
+    <a href="/download-ppt" target="_blank">⬇️ Download PPT</a>
   </div>
 
-  <script>
-    async function fetchData() {
-      const res = await fetch("/admin-data");
-      const data = await res.json();
-      const tbody = document.querySelector("#dataTable tbody");
+  <table id="playersTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>House</th>
+        <th>Mobile</th>
+        <th>WhatsApp</th>
+        <th>Father</th>
+        <th>Age</th>
+        <th>Unit</th>
+        <th>EPL 2.0</th>
+        <th>Previous Team</th>
+        <th>Photo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- JS will fill this -->
+    </tbody>
+  </table>
 
-      data.forEach(entry => {
-        const row = document.createElement("tr");
+  <script>
+    async function fetchPlayers() {
+      const res = await fetch('/admin-data');
+      const data = await res.json();
+      const tbody = document.querySelector('#playersTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(player => {
+        const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${entry.name}</td>
-          <td>${entry.house}</td>
-          <td>${entry.mobile}</td>
-          <td>${entry.whatsapp}</td>
-          <td>${entry.father}</td>
-          <td>${entry.age}</td>
-          <td>${entry.unit}</td>
-          <td>${entry.epl}</td>
-          <td>${entry.prev_team || "-"}</td>
-          <td><img src="/${entry.photo_path}" alt="Photo"></td>
+          <td>${player.name}</td>
+          <td>${player.house}</td>
+          <td>${player.mobile}</td>
+          <td>${player.whatsapp}</td>
+          <td>${player.father}</td>
+          <td>${player.age}</td>
+          <td>${player.unit}</td>
+          <td>${player.epl}</td>
+          <td>${player.prev_team || '-'}</td>
+          <td><img src="/${player.photo_path}" alt="Photo"></td>
         `;
         tbody.appendChild(row);
       });
     }
-
-    document.getElementById("downloadBtn").addEventListener("click", () => {
-      window.location.href = "/download-csv";
-    });
-
-    fetchData();
+    fetchPlayers();
   </script>
 </body>
 </html>
