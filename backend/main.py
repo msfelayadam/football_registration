@@ -40,6 +40,7 @@ if not os.path.exists(CSV_FILE):
 # Static mounts
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
+app.mount("/static", StaticFiles(directory="backend"), name="static")
 
 # Serve index.html on root
 @app.get("/", response_class=HTMLResponse)
