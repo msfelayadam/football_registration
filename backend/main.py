@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Form, File, UploadFile, Request
+from supabase_client import supabase
+import uuid
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -222,3 +224,17 @@ async def download_csv():
         ])
     output.seek(0)
     return StreamingResponse(output, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=players.csv"})
+
+
+@app.post("/upload/")
+async def upload_photo(file: UploadFile = File(...)):
+    file_content = await file.read()
+    unique_name = f"{uuid.uuid4()}_{file.filename}"
+
+    res = supabase.storage.from_("player-photos").upload(unique_name, file_content)
+
+    if res.get("error"):
+        return {"error": res["error"]["message"]}
+
+    public_url = supabase.storage.from_("player-photos").get_public_url(unique_name)
+    return {"url": public_url}
