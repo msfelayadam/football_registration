@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Player Registration</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>⚽ Player Registration</h2>
+    <form id="registerForm" enctype="multipart/form-data" novalidate>
+      <!-- Full Name -->
+      <div class="form-group">
+        <input type="text" name="name" id="name" required pattern="[A-Za-z ]+" />
+        <label for="name">Full Name</label>
+        <small class="error-msg">Only letters and spaces allowed.</small>
+      </div>
+
+      <!-- House Name -->
+      <div class="form-group">
+        <input type="text" name="house" id="house" required pattern="[A-Za-z ]+" />
+        <label for="house">House Name</label>
+        <small class="error-msg">Only letters and spaces allowed.</small>
+      </div>
+
+      <!-- Mobile -->
+      <div class="form-group">
+        <input type="tel" name="mobile" id="mobile" required pattern="\d{10}" />
+        <label for="mobile">Mobile Number</label>
+        <small class="error-msg">Enter 10-digit mobile number.</small>
+      </div>
+
+      <!-- WhatsApp -->
+      <div class="form-group">
+        <input type="tel" name="whatsapp" id="whatsapp" required pattern="\d{10}" />
+        <label for="whatsapp">WhatsApp Number</label>
+        <small class="error-msg">Enter 10-digit WhatsApp number.</small>
+      </div>
+
+      <!-- Checkbox -->
+      <label class="checkbox">
+        <input type="checkbox" id="sameAsMobile" /> WhatsApp same as Mobile
+      </label>
+
+      <!-- Father's Name -->
+      <div class="form-group">
+        <input type="text" name="father" id="father" required pattern="[A-Za-z ]+" />
+        <label for="father">Father's Name</label>
+        <small class="error-msg">Only letters and spaces allowed.</small>
+      </div>
+
+      <!-- Age -->
+      <div class="form-group">
+        <input type="number" name="age" id="age" required min="15" max="25" />
+        <label for="age">Age (15–25)</label>
+        <small class="error-msg">Age must be between 15 and 25.</small>
+      </div>
+
+      <!-- Unit -->
+      <div class="form-group">
+        <select name="unit" id="unit" required>
+          <option value="">-- Select Unit --</option>
+          <option value="Elayadam">Elayadam</option>
+          <option value="Vattapoyil">Vattapoyil</option>
+          <option value="Karungal">Karungal</option>
+          <option value="Other">Other</option>
+        </select>
+        <label for="unit">Unit Name</label>
+        <small class="error-msg">Please select your unit.</small>
+      </div>
+
+      <!-- EPL 2.0 -->
+      <div class="form-group">
+        <select name="epl" id="eplSelect" required>
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+        <label for="eplSelect">Played in EPL 2.0?</label>
+        <small class="error-msg">Please select an option.</small>
+      </div>
+
+      <!-- Previous Team (conditional) -->
+      <div id="teamSelect" class="form-group" style="display:none;">
+        <select name="prev_team" id="prev_team">
+          <option value="">-- Select Team --</option>
+          <option>Red Warriors</option>
+          <option>Blue Strikers</option>
+          <option>Green Giants</option>
+          <option>Black Panthers</option>
+        </select>
+        <label for="prev_team">Previous Team</label>
+        <small class="error-msg">Please select a previous team.</small>
+      </div>
+
+      <!-- Photo -->
+      <div class="form-group">
+        <input type="file" name="photo" id="photoInput" accept=".jpg,.jpeg,.png" required />
+        <label for="photoInput">Upload Photo (JPG/PNG, max 2MB)</label>
+        <small class="error-msg">Must be .jpg or .png and under 2MB.</small>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit">Submit</button>
+      <p id="responseMsg"></p>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const inputs = form.querySelectorAll("input, select");
+
+    // Floating & validation logic
+    inputs.forEach(input => {
+      input.addEventListener("input", () => validateField(input));
+      input.addEventListener("blur", () => validateField(input));
+    });
+
+    // Sync mobile to WhatsApp
+    document.getElementById("sameAsMobile").addEventListener("change", function () {
+      const mobile = document.getElementById("mobile").value;
+      const whatsapp = document.getElementById("whatsapp");
+      whatsapp.value = this.checked ? mobile : "";
+      validateField(whatsapp);
+    });
+
+    // Show/hide Previous Team
+    document.getElementById("eplSelect").addEventListener("change", function () {
+      const teamDiv = document.getElementById("teamSelect");
+      teamDiv.style.display = this.value === "yes" ? "block" : "none";
+    });
+
+    function validateField(field) {
+      const group = field.closest(".form-group");
+      const errorMsg = group?.querySelector(".error-msg");
+
+      if (field.type === "file") {
+        const file = field.files[0];
+        if (!file || !["image/jpeg", "image/png"].includes(file.type) || file.size > 2 * 1024 * 1024) {
+          field.classList.add("invalid");
+          field.classList.remove("valid");
+          if (errorMsg) errorMsg.style.display = "block";
+          return false;
+        }
+      } else if (!field.checkValidity()) {
+        field.classList.add("invalid");
+        field.classList.remove("valid");
+        if (errorMsg) errorMsg.style.display = "block";
+        return false;
+      }
+
+      field.classList.remove("invalid");
+      field.classList.add("valid");
+      if (errorMsg) errorMsg.style.display = "none";
+      return true;
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      let allValid = true;
+      inputs.forEach(input => {
+        if (!validateField(input)) allValid = false;
+      });
+
+      if (!allValid) {
+        alert("Please correct the highlighted fields.");
+        return;
+      }
+
+      const formData = new FormData(form);
+      const res = await fetch("http://127.0.0.1:8001/register", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await res.json();
+      document.getElementById("responseMsg").innerText = result.message;
+      form.reset();
+      document.getElementById("teamSelect").style.display = "none";
+      document.querySelectorAll(".valid").forEach(el => el.classList.remove("valid"));
+    });
+  </script>
+</body>
+</html>
