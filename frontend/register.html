@@ -169,7 +169,7 @@
       }
 
       const formData = new FormData(form);
-      const res = await fetch("http://127.0.0.1:8001/register", {
+      const res = await fetch("/register", {
         method: "POST",
         body: formData
       });
