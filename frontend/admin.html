@@ -62,7 +62,7 @@
 
   <script>
     async function fetchData() {
-      const res = await fetch("http://127.0.0.1:8001/admin-data");
+      const res = await fetch("/admin-data");
       const data = await res.json();
       const tbody = document.querySelector("#dataTable tbody");
 
@@ -78,14 +78,14 @@
           <td>${entry.unit}</td>
           <td>${entry.epl}</td>
           <td>${entry.prev_team || "-"}</td>
-          <td><img src="http://127.0.0.1:8001/${entry.photo_path}" alt="Photo"></td>
+          <td><img src="/${entry.photo_path}" alt="Photo"></td>
         `;
         tbody.appendChild(row);
       });
     }
 
     document.getElementById("downloadBtn").addEventListener("click", () => {
-      window.location.href = "http://127.0.0.1:8001/download-csv";
+      window.location.href = "/download-csv";
     });
 
     fetchData();
