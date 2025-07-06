@@ -1,7 +1,9 @@
 from fastapi import FastAPI, Form, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from fastapi import Request
 import os
 import csv
 from datetime import datetime
@@ -36,9 +38,14 @@ if not os.path.exists(CSV_FILE):
             "epl", "prev_team", "photo_path"
         ])
 
+templates = Jinja2Templates(directory="frontend")
 # Serve uploaded photos
 app.mount("/backend/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/static", StaticFiles(directory="backend"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+def read_index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 # Route: Registration Form Submission
 @app.post("/register")
