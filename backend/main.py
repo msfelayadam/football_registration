@@ -15,7 +15,8 @@ from sqlalchemy.sql import func
 import databases
 import uuid
 
-DATABASE_URL = "postgresql://postgres:Sevana%401995@db.dnwfdswyuqahzmkgewui.supabase.co:5432/postgres"
+#DATABASE_URL = "postgresql://postgres:Sevana%401995@db.dnwfdswyuqahzmkgewui.supabase.co:5432/postgres"
+DATABASE_URL = "postgresql://football_db_9sfj_user:O2Ux8ljm3l1XCkJjT2hwcS4m6dTfRSO5@dpg-d1laqcadbo4c739pggn0-a/football_db_9sfj"
 database = databases.Database(DATABASE_URL)
 metadata = MetaData()
 
