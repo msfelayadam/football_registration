@@ -45,9 +45,9 @@ app.mount("/static", StaticFiles(directory="backend"), name="static")
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 
-@app.get("/", response_class=HTMLResponse)
-def read_index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+@app.get("/", include_in_schema=False)
+def root():
+    return FileResponse("frontend/index.html")
 
 # Route: Registration Form Submission
 @app.post("/register")
