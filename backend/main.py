@@ -42,6 +42,8 @@ templates = Jinja2Templates(directory="frontend")
 # Serve uploaded photos
 app.mount("/backend/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 app.mount("/static", StaticFiles(directory="backend"), name="static")
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
 
 @app.get("/", response_class=HTMLResponse)
 def read_index(request: Request):
